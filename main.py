@@ -2,6 +2,7 @@ import pandas as pd
 from openpyxl import workbook
 from openpyxl import load_workbook
 import datetime
+import time
 import json
 
 url = r'https://granica.mup.hr/default.inc.aspx?ajaxq=PrometPoDatumu&odDat='
@@ -26,15 +27,19 @@ def data_to_excel(_data, _date):
 
 if __name__ == '__main__':
     base = datetime.datetime.today()
-    days_look_back = 365
+    days_look_back = 500
     date_list = [base - datetime.timedelta(days=x) for x in range(days_look_back)]
 
     i = 0
 
     for date in date_list:
 
-        
-        tables_ulazi_izlazi = pd.read_html(url + date.strftime('%d.%m.20%y.'))
+        # Sometimes the request fails, so we need to retry it
+        try:
+            tables_ulazi_izlazi = pd.read_html(url + date.strftime('%d.%m.20%y.'))
+        except:
+            tables_ulazi_izlazi = pd.read_html(url + date.strftime('%d.%m.20%y.'))
+            continue
 
         i += 1
         print('ulazi i izlazi procitani ' + str(i))
