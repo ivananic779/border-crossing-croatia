@@ -31,18 +31,6 @@ sheet = wb.active
 excel_row_number = 2
 excel_column_number = 1
 
-def data_to_excel(_data, _date):
-    global excel_column_number
-    global excel_row_number
-
-    for key, value in _data.items():
-        if excel_column_number == 1:
-            sheet.cell(row=excel_row_number,column=excel_column_number).value = _date
-            excel_column_number += 1
-        elif (key != '0'):
-            sheet.cell(row=excel_row_number,column=excel_column_number).value = value
-            excel_column_number += 1
-
 def get_html(_date):
     global url
 
@@ -139,6 +127,23 @@ def get_data(_html):
 
     return data
 
+def data_to_excel(_data, _date):
+    global excel_column_number
+    global excel_row_number
+
+    for key, value in _data.items():
+        try:
+            if excel_column_number == 1:
+                sheet.cell(row=excel_row_number,column=excel_column_number).value = _date
+                excel_column_number += 1
+            elif (key != '0'):
+                sheet.cell(row=excel_row_number,column=excel_column_number).value = int(value)
+                excel_column_number += 1
+        except Exception as e:
+            print('Error data_to_excel: ' + str(e))
+            exit(1)
+
+
 if __name__ == '__main__':
 
     i = 0
@@ -160,10 +165,10 @@ if __name__ == '__main__':
         json_putnici = json.loads(json.dumps(data[0].to_dict(orient='records'), indent=4))
         
         for row in json_putnici[3:9]:
-            data_to_excel(row, (date + timedelta(days=-1)).strftime('%d.%m.20%y.'))
+            data_to_excel(row, (date - timedelta(days=1)).strftime('%d.%m.20%y.'))
 
         for row in json_putnici[12:]:
-            data_to_excel(row, (date + timedelta(days=-1)).strftime('%d.%m.20%y.'))
+            data_to_excel(row, (date - timedelta(days=1)).strftime('%d.%m.20%y.'))
 
         # Increase row number for each date
         excel_row_number += 1
