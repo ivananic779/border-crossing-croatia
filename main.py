@@ -2,7 +2,6 @@ import pandas as pd
 from openpyxl import workbook
 from openpyxl import load_workbook
 import datetime
-import time
 import json
 
 url = r'https://granica.mup.hr/default.inc.aspx?ajaxq=PrometPoDatumu&odDat='
@@ -24,6 +23,7 @@ def data_to_excel(_data, _date):
         elif (key != '0'):
             sheet.cell(row=excel_row_number,column=excel_column_number).value = value
             excel_column_number += 1
+
 
 if __name__ == '__main__':
     base = datetime.datetime.today()
