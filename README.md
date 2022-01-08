@@ -13,3 +13,6 @@ pip install pandas
 
 ### missing_dates.txt contains the list of all dates that are missing from the dataset
 
+
+### The functions in main.py were almost completly written by github copilot based on the comments.
+
