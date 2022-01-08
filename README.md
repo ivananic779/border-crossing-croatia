@@ -7,7 +7,7 @@ excel file for each day from today to days_look_back days ago.
 
 The other xlsx file beside the template is a mined dataset from the date in the filename - 3500 days ago.
 
-Requered imports:
+Required imports:
 ```
 pip install requests
 pip install pandas
