@@ -1,4 +1,4 @@
-# Get Border crossing for Croatia - historical information and current situation divided into various categories as excel sheets
+# Get Border crossing for Croatia - historical information divided into various categories as excel sheets
 
 Running main.py will transfer data from https://granica.mup.hr/default.inc.aspx?ajaxq=PrometPoDatumu&odDat= to an
 excel file for each day from today to days_look_back days ago.
