@@ -22,11 +22,13 @@ month_dict = {
 url = r'https://granica.mup.hr/default.inc.aspx?ajaxq=PrometPoDatumu&odDat='
 
 base_date = datetime.today()
-days_look_back = 20
+days_look_back = 3500
 date_list = [base_date - timedelta(days=x) for x in range(days_look_back)]
 
 wb = load_workbook('template_ulazi_izlazi.xlsx')
-sheet = wb.active
+sheets = wb.sheetnames
+
+sheet = wb[sheets[0]]
 
 excel_row_number = 2
 excel_column_number = 1
@@ -41,7 +43,7 @@ def get_html(_date):
     except:
         # Try again, sometimes the first request fails
         try:            
-            time.sleep(1)
+            time.sleep(2)
             r = requests.get(_url)
         except Exception as e:
             print('Error get_html: ' + _url + ' ' + str(e))
@@ -128,8 +130,18 @@ def get_data(_html):
     return data
 
 def data_to_excel(_data, _date):
+    """
+        _data looks like this:
+        {'0': 'Cestovni', '1': '46637', '2': '69364', '3': '116001', '4': '46979', '5': '57250', '6': '104229', '7': '220230'}
+        from index 1 to index 7:
+        domaci ulaz, strani ulaz, ukupno ulaz, domaci izlaz, strani izlaz, ukupno izlaz, ukupno
+
+        shove the data into the excel file, each sheet is a different 0 index value(cestovni, zracni, automobili, avioni...)
+        and they are always in the same order just like in the template
+    """
     global excel_column_number
     global excel_row_number
+    global sheet
 
     for key, value in _data.items():
         try:
@@ -158,25 +170,37 @@ if __name__ == '__main__':
         # If reference date is the same as base_date - 1 day, then skip that date
         # Ignore time difference, just check if the date is the same
         if reference_date.date() == (base_date - timedelta(days=1)).date():
+            with open('missing_dates.txt', 'a') as f:
+                f.write(date.strftime('%d.%m.%Y.') + '\n')
             continue
 
         data = get_data(html)
 
         json_putnici = json.loads(json.dumps(data[0].to_dict(orient='records'), indent=4))
+
+        # We will use this to change active sheets by referencing the index of the sheet in variable sheets
+        # Each row in json_putnici is a new sheet
+        j = 0
         
         for row in json_putnici[3:9]:
+            sheet = wb[sheets[j]]
             data_to_excel(row, (date - timedelta(days=1)).strftime('%d.%m.20%y.'))
+            j += 1
+            # Reset column number for each sheet
+            excel_column_number = 1
 
         for row in json_putnici[12:]:
+            sheet = wb[sheets[j]]
             data_to_excel(row, (date - timedelta(days=1)).strftime('%d.%m.20%y.'))
+            j += 1
+            # Reset column number for each sheet
+            excel_column_number = 1
 
         # Increase row number for each date
         excel_row_number += 1
-        # Reset column number for each date
-        excel_column_number = 1
 
         i += 1
 
         print('Saved: ' + str(i))
 
-    wb.save('ulazi_izlazi_01_01_2019.xlsx')
+    wb.save(base_date.strftime('%d_%m_%Y_%H_%M') + '.xlsx')
