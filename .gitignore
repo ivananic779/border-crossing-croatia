@@ -1423,3 +1423,4 @@ app_backend/venv/Lib/site-packages/pyodbc-4.0.32.dist-info/REQUESTED
 app_backend/venv/Lib/site-packages/pyodbc-4.0.32.dist-info/top_level.txt
 app_backend/venv/Lib/site-packages/pyodbc-4.0.32.dist-info/WHEEL
 app_backend/venv/pyodbc.pyi
+app_web/node_modules/
