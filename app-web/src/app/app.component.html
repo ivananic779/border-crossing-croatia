@@ -1,14 +1,47 @@
-<ngx-charts-line-chart
-[view]="[1000, 650]"
-[legend]="true"
-[showXAxisLabel]="true"
-[showYAxisLabel]="true"
-[xAxis]="true"
-[yAxis]="true"
-[xAxisLabel]="'date'"
-[yAxisLabel]="'value'"
+<!---->
+<ngx-charts-line-chart *ngIf="this.multi"
+[view]="this.chart_view"
+
+[schemeType]="this.scheme_type"
+
+[customColors]="this.custom_colors"
+
+[animations]="true"
+
 [timeline]="true"
-[results]="multi"
+
+[autoScale]="true"
+
+[gradient]="false"
+
+[tooltipDisabled]="false"
+
+[legend]="true"
+[legendTitle]="this.legend_title"
+[legendPosition]="this.legend_position"
+
+[xAxis]="true"
+[showXAxisLabel]="true"
+[xAxisLabel]="'Datum'"
+[trimXAxisTicks]="true"
+[rotateXAxisTicks]="true"
+[maxXAxisTickLength]="16"
+
+[yAxis]="true"
+[showYAxisLabel]="true"
+[yAxisLabel]="'Broj ljudi'"
+[trimYAxisTicks]="true"
+[rotateXAxisTicks]="true"
+[maxYAxisTickLength]="16"
+
+[results]="this.multi"
+
+[roundDomains]="false"
+
+(select)="select($event)"
+(activate)="activate($event)"
+(deactivate)="deactivate($event)"
 >
 
 </ngx-charts-line-chart>
+<button (click)="test()">AAA</button>
