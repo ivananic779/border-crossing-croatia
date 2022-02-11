@@ -34,3 +34,6 @@ def jsonify_db_response(_cursor):
         rows.append(dict(zip(column_names, row)))
 
     return jsonify(rows)
+
+def jsonify_formatted_db_response(_data):
+    return jsonify(_data)
