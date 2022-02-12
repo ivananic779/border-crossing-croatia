@@ -1,145 +1,79 @@
 from flask import Flask, request
 from flask_cors import CORS
-import base64
+from flask import jsonify
+import base64, json
 from db import connect_database, jsonify_formatted_db_response
-from errors import query_error
+from errors import query_error, post_body_error, connect_db_error
 
 app = Flask(__name__)
 
 CORS(app)
 
-def get_graph():
-    conn = connect_database()
+# This is used to keep all values for a single graph line
+# We can then use it to track changes if we need to
+# We can use this to detect anomalies in the data
+# Different functions utilize this differentrly
+current_line_values = []
 
-    formatted_data = {
-        "name": "2020",
-        "series": [],
-    }
+def get_net_value_change(_ulaz, _izlaz):
+    global current_line_values
 
-    formatted_data2 = {
-        "name": "2019",
-        "series": [],
-    }
+    # Add new value to current_line_values
+    current_line_values.append(_ulaz - _izlaz)
 
-    formatted_data3 = {
-        "name": "2018",
-        "series": [],
-    }
+    return sum(current_line_values)
 
-    formatted_data4 = {
-        "name": "2021",
-        "series": []
-    }
-
-    formatted_data5 = {
-        "name": "2013",
-        "series": []
-    }
+def get_graph(_query_options):
+    global current_line_values
 
     try:
-        conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_ukupno where date between '2020-05-14' and '2020-09-30' order by date")
-
-        # Convert all dates to day-month-year format 
-        # Calculate net value
-        # and push them as dict to formatted_data
-        net_value = 0
-        for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
-            net_value += ulaz_ukupno
-            net_value -= izlaz_ukupno
-
-            formatted_data["series"].append({
-                "name": date.strftime("%d-%m"),
-                "value": net_value,
-            })
-
-        conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_ukupno where date between '2019-05-14' and '2019-09-30' order by date")
-
-        # Convert all dates to day-month-year format
-        # Calculate net value
-        # and push them as dict to formatted_data
-        net_value = 0
-        for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
-            net_value += ulaz_ukupno
-            net_value -= izlaz_ukupno
-
-            formatted_data2["series"].append({
-                "name": date.strftime("%d-%m"),
-                "value": net_value,
-            })
-
-        conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_ukupno where date between '2018-05-14' and '2018-09-30' order by date")
-
-        # Convert all dates to day-month-year format
-        # Calculate net value
-        # and push them as dict to formatted_data
-        net_value = 0
-        for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
-            net_value += ulaz_ukupno
-            net_value -= izlaz_ukupno
-
-            formatted_data3["series"].append({
-                "name": date.strftime("%d-%m"),
-                "value": net_value,
-            })
-
-        conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_ukupno where date between '2021-05-14' and '2021-09-30' order by date")
-
-        # Convert all dates to day-month-year format
-        # Calculate net value
-        # and push them as dict to formatted_data
-        net_value = 0
-        for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
-            net_value += ulaz_ukupno
-            net_value -= izlaz_ukupno
-
-            formatted_data4["series"].append({
-                "name": date.strftime("%d-%m"),
-                "value": net_value,
-            })
-
-        conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_ukupno where date between '2014-05-14' and '2014-09-30' order by date")
-
-        # Convert all dates to day-month-year format
-        # Calculate net value
-        # and push them as dict to formatted_data
-        net_value = 0
-        for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
-            # Check difference between ulaz_ukupno and izlaz_ukupno
-            # If the difference is bigger than 200,000, skip to next iteration
-            if abs(ulaz_ukupno - izlaz_ukupno) > 200000:
-                continue
-
-            net_value += ulaz_ukupno
-            net_value -= izlaz_ukupno
-
-            formatted_data5["series"].append({
-                "name": date.strftime("%d-%m"),
-                "value": net_value,
-            })
-
+        conn = connect_database()
     except Exception as e:
-        print(e)
-        return query_error()
+        return connect_db_error()
 
-    return jsonify_formatted_db_response([formatted_data, formatted_data2, formatted_data3, formatted_data4, formatted_data5])
+    ret = []
 
-@app.route("/api/get", methods=['GET'])
+    for _query_option in _query_options:
+        current_line_values = []
+
+        data = {
+            "name": _query_option["name"],
+            "series": []
+        }
+
+        try:
+            conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_" + _query_option["table"] + " where date between '" + _query_option["date_from"] + "' and '" + _query_option["date_to"] + "' order by date")
+
+            # Check if response is empty
+            if conn.rowcount == 0:
+                return query_error()
+
+            for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():          
+
+                data["series"].append({
+                    "name": date.strftime("%d-%m"),
+                    "value": get_net_value_change(ulaz_ukupno, izlaz_ukupno),
+                })
+
+            ret.append(data)
+
+        except Exception as e:
+            print(e)
+            return query_error()
+
+    return jsonify_formatted_db_response(ret)
+
+@app.route("/api/get", methods=['POST'])
 def index():
 
-    # Read base64 from url if it exists, save it to base64_query
-    base64_query = request.args.get('query')
+    # Read data from post body
+    query_options = request.get_json()
 
-    # # If base64_query is not empty, decode it and save it to base64_decoded
-    # if base64_query:
-    #     base64_decoded = base64.b64decode(base64_query)
+    # Check if data is valid
+    if not query_options:
+        return post_body_error()
 
-    #     return base64_decoded
-
-    # # If base64_query is empty, return error
-    # else:
-    #     return "Error: No base64 query found"
-
-    return get_graph()
+    return get_graph(query_options)
 
 if __name__ == "__main__":
     app.run(debug=True)
