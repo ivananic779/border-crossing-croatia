@@ -104,6 +104,11 @@ def get_graph():
         # and push them as dict to formatted_data
         net_value = 0
         for date, ulaz_ukupno, izlaz_ukupno in conn.fetchall():
+            # Check difference between ulaz_ukupno and izlaz_ukupno
+            # If the difference is bigger than 200,000, skip to next iteration
+            if abs(ulaz_ukupno - izlaz_ukupno) > 200000:
+                continue
+
             net_value += ulaz_ukupno
             net_value -= izlaz_ukupno
 
