@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError, retry, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -19,15 +19,23 @@ export class ApiService {
 
   // ------------------------------------------------------------
 
-  public getUkupno(): Observable<any> {
-    return this.http.get<any>(this.apiUrl + '/get')
+  public getUkupno(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
+    return this.http.post<any>(this.apiUrl + '/get', _request_options)
       .pipe(
         retry(3),
         catchError(this.handleError)
       );
   }
 
-  // ------------------------------------------------------------
+ // same request as above, but console log the response
+  public getUkupno_log(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
+    return this.http.post<any>(this.apiUrl + '/get', _request_options)
+      .pipe(
+        retry(3),
+        catchError(this.handleError),
+        tap(data => console.log(data))
+      );
+  }
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {

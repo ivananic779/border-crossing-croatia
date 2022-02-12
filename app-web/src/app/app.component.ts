@@ -12,19 +12,19 @@ export class AppComponent implements OnInit {
 
   multi = [
     {
-      "name": "Germany",
+      "name": "",
       "series": [
         {
-          "name": 1990,
-          "value": 62000000
+          "name": new Date('2020-01-01'),
+          "value": 0
         },
         {
-          "name": 2010,
-          "value": 73000000
+          "name": new Date('2020-01-01'),
+          "value": 0
         },
         {
-          "name": 2011,
-          "value": 89400000
+          "name": new Date('2020-01-01'),
+          "value": 0
         }
       ]
     }
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
   table_list = [
     'ukupno',
     'autobusi',
-    'osobni_autmobili',
+    'osobni_automobili',
     'avioni',
     'teretna_vozila',
     'plovila',
@@ -52,10 +52,10 @@ export class AppComponent implements OnInit {
 
   requestOptions = [
     {
-      name: 'Primjer',
-      table: 'ukupno',
-      date_from: '2021-05-14',
-      date_to: '2021-09-30'
+      name: '',
+      table: '',
+      date_from: '',
+      date_to: ''
     }
   ];
 
@@ -71,29 +71,50 @@ export class AppComponent implements OnInit {
     this.scheme_type = ScaleType.Ordinal;
     this.legend_title = 'Legenda';
     this.legend_position = LegendPosition.Right;
+    this.getRequestOptionsFromStorage();
   }
 
   ngOnInit() {
     this.getData();
   }
 
+  setRequestOptionsToStorage() {
+    localStorage.setItem('requestOptions', JSON.stringify(this.requestOptions));
+  }
+
+  getRequestOptionsFromStorage() {
+    if (localStorage.getItem('requestOptions') != null) {
+      let requestOptions = localStorage.getItem('requestOptions');
+      if (requestOptions) {
+        this.requestOptions = JSON.parse(requestOptions);
+      }
+    }
+  }
+
   getData() {
-    this.apiService.getUkupno().subscribe(data => {
+    this.apiService.getUkupno(this.requestOptions).subscribe(data => {
       this.multi = [];
       let i = 0;
-      data.forEach((element: { name: string; series: { name: number; value: number; }[]; }) => {
-        this.multi[i] = element;
-        i++;
-      });
+      // check data has been returned
+      if (data.length > 0) {   
+        data.forEach((element: { name: string; series: { name: Date; value: number; }[]; }) => {
+          element.series.forEach((element2: { name: Date; value: number; }) => {
+            // element2.name looks like '12-31', make a date object without a year of it
+            let str1 = element2.name.toString();
+            // flip dates in str1
+            str1 = str1.split('-').reverse().join('-');
+            let str2 = '1970-' + str1;
+            let date = new Date(str2);
+            // remove year from date object
+            date.setFullYear(1980);
+            // add the date object to the series
+            element2.name = date;
+          });
+          this.multi[i] = element;
+          i++;
+        });
+      }
     });
-  }
-
-  add_new_line() {
-    console.log(this.requestOptions);
-  }
-
-  remove_line(data: any) {
-    console.log('Remove', JSON.parse(JSON.stringify(data)));
   }
 
   select(data: any) {
@@ -106,6 +127,41 @@ export class AppComponent implements OnInit {
 
   deactivate(data: any) {
     console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+  }
+
+  refresh() {
+    this.setRequestOptionsToStorage();
+    this.getData();
+  }
+
+  // Adds a new request option
+  add_new_line() {
+    this.requestOptions.push({
+      name: '',
+      table: '',
+      date_from: '',
+      date_to: ''
+    });
+  }
+
+  // Removes a request option
+  remove_line(data: any) {
+    this.requestOptions.splice(this.requestOptions.indexOf(data), 1);
+  }
+
+  // Deletes all request options
+  delete_all_lines() {
+    this.requestOptions = [];
+    this.requestOptions = [
+      {
+        name: '',
+        table: '',
+        date_from: '',
+        date_to: ''
+      }
+    ];
+
+    this.getData();
   }
 
 }
