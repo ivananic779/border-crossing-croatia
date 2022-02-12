@@ -30,42 +30,72 @@ export class AppComponent implements OnInit {
     }
   ];
 
+  table_list = [
+    'ukupno',
+    'autobusi',
+    'osobni_autmobili',
+    'avioni',
+    'teretna_vozila',
+    'plovila',
+    'vlakovi',
+    'ukupno_prijevozna_sredstva',
+    'cestovni',
+    'pomorski',
+    'rijecni',
+    'zeljeznicki',
+    'zracni'
+  ];
+
+  query_types = [
+    'neto',
+  ];
+
+  requestOptions = [
+    {
+      name: 'Primjer',
+      table: 'ukupno',
+      date_from: '2021-05-14',
+      date_to: '2021-09-30'
+    }
+  ];
+
   chart_view: [number, number];
   scheme_type: ScaleType;
-  // Override colors for certain values
-  custom_colors: any[];
   legend_title: string;
   legend_position: LegendPosition;
 
   constructor(
     public apiService: ApiService
   ) {
-    this.chart_view = [1920, 1080];
+    this.chart_view = [1600, 900];
     this.scheme_type = ScaleType.Ordinal;
-    this.custom_colors = [
-      {
-        name: 'Upit 1',
-        value: '#00b0ff'
-      }
-    ];
     this.legend_title = 'Legenda';
     this.legend_position = LegendPosition.Right;
   }
 
   ngOnInit() {
+    this.getData();
+  }
+
+  getData() {
     this.apiService.getUkupno().subscribe(data => {
       this.multi = [];
-      this.multi[0] = data[0];
-      this.multi[1] = data[1];
+      let i = 0;
+      data.forEach((element: { name: string; series: { name: number; value: number; }[]; }) => {
+        this.multi[i] = element;
+        i++;
+      });
     });
-  }  
+  }
 
-  test() {
-    console.log(this.multi);
-    //this.custom_colors[0].value = '#ff0000';
-    //this.scheme_type = ScaleType.Linear;
-  }  
-  
+  add_new_line() {
+    console.log(this.requestOptions);
+  }
+
+  remove_line(data: any) {
+    console.log('Remove', JSON.parse(JSON.stringify(data)));
+  }
+
   select(data: any) {
     console.log('Item clicked', JSON.parse(JSON.stringify(data)));
   }

@@ -1,10 +1,9 @@
+<h2 class="text-center">Neto ulazi/izlazi</h2>
 <!---->
 <ngx-charts-line-chart *ngIf="this.multi"
 [view]="this.chart_view"
 
 [schemeType]="this.scheme_type"
-
-[customColors]="this.custom_colors"
 
 [animations]="true"
 
@@ -29,7 +28,7 @@
 
 [yAxis]="true"
 [showYAxisLabel]="true"
-[yAxisLabel]="'Broj ljudi'"
+[yAxisLabel]="'Broj'"
 [trimYAxisTicks]="true"
 [rotateXAxisTicks]="true"
 [maxYAxisTickLength]="16"
@@ -44,4 +43,34 @@
 >
 
 </ngx-charts-line-chart>
-<button (click)="test()">AAA</button>
+
+<br>
+<button (click)="add_new_line()">Dodaj Novi</button>
+
+<div *ngFor="let query of requestOptions">
+    <br>
+    <button (click)="remove_line(query)">Obriši</button>
+    <br>
+    <label>
+        Naziv
+        <input type="text" [(ngModel)]="query.name">
+    </label>
+    <br>
+    <label>
+        Datum od
+        <input type="date" [(ngModel)]="query.date_from">
+    </label>
+    <br>
+    <label>
+        Datum do
+        <input type="date" [(ngModel)]="query.date_to">
+    </label> 
+    <br>
+    <label>Tablica
+        <select name="selectomundo" [(ngModel)]="query.table">
+            <option *ngFor="let table of table_list">{{table}}</option>
+        </select>
+        <br>
+    </label>
+
+</div>
