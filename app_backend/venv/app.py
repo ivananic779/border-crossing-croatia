@@ -9,6 +9,22 @@ app = Flask(__name__)
 
 CORS(app)
 
+table_names = {
+    'Ukupno ljudi': 't_ukupno',
+    'Autobusi': 't_autobusi',
+    'Osobni automobili': 't_osobni_automobili',
+    'Avioni': 't_avioni',
+    'Teretna vozila': 't_teretna_vozila',
+    'Plovila': 't_plovila',
+    'Vlakovi': 't_vlakovi',
+    'Ukupno prijevozna sredstva': 't_ukupno_prijevozna_sredstva',
+    'Cestovni': 't_cestovni',
+    'Pomorski': 't_pomorski',
+    'Rijecni': 't_rijecni',
+    'Zeljeznicki': 't_zeljeznicki',
+    'Zracni': 't_zracni'
+}
+
 # This is used to keep all values for a single graph line
 # We can then use it to track changes if we need to
 # We can use this to detect anomalies in the data
@@ -42,7 +58,7 @@ def get_graph(_query_options):
         }
 
         try:
-            conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM t_" + _query_option["table"] + " where date between '" + _query_option["date_from"] + "' and '" + _query_option["date_to"] + "' order by date")
+            conn.execute("SELECT date, ulaz_ukupno, izlaz_ukupno FROM " + get_table_name(_query_option["table"]) + " where date between '" + _query_option["date_from"] + "' and '" + _query_option["date_to"] + "' order by date")
 
             # Check if response is empty
             if conn.rowcount == 0:
@@ -62,6 +78,11 @@ def get_graph(_query_options):
             return query_error()
 
     return jsonify_formatted_db_response(ret)
+
+def get_table_name(_key):
+    global table_names
+
+    return table_names[_key]
 
 @app.route("/api/get", methods=['POST'])
 def index():
