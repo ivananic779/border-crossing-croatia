@@ -60,11 +60,11 @@ export class AppComponent implements OnInit {
 
   requestOptions = [
     {
-      name: '',
-      table: '',
-      date_from: '',
-      date_to: '',
-      query_type: ''
+      name: '2021 Ukupno neto',
+      table: 'Ukupno ljudi',
+      date_from: '2021-01-01',
+      date_to: '2021-12-31',
+      query_type: 'Neto ukupno'
     }
   ];
 
