@@ -43,6 +43,7 @@
                 <th>Datum od</th>
                 <th>Datum do</th>
                 <th>Tablica</th>
+                <th>Tip prikaza</th>
                 <th>Obriši</th>
             </tr>
         </ng-template>
@@ -52,7 +53,7 @@
                     <input type="text" [(ngModel)]="requestOption.name">
                 </td>
                 <td><span class="p-column-title">Datum od</span>
-                    <input type="date" [(ngModel)]="requestOption.date_from">
+                    <input type="date" min="2012-01-01" [(ngModel)]="requestOption.date_from">
                 </td>
                 <td><span class="p-column-title">Datum do</span>
                     <input type="date" [(ngModel)]="requestOption.date_to">
@@ -60,6 +61,11 @@
                 <td><span class="p-column-title">Tablica</span>
                     <select name="selectomundo" [(ngModel)]="requestOption.table">
                         <option *ngFor="let table of table_list">{{table}}</option>
+                    </select>
+                </td>
+                <td><span class="p-column-title">Tip prikaza</span>
+                    <select name="selectomundo" [(ngModel)]="requestOption.query_type">
+                        <option *ngFor="let graph_type of graph_types">{{graph_type}}</option>
                     </select>
                 </td>
                 <td><span class="p-column-title">Obriši</span>

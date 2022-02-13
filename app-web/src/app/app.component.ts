@@ -46,8 +46,16 @@ export class AppComponent implements OnInit {
     'Zracni'
   ];
 
-  query_types = [
-    'neto',
+  graph_types = [
+    'Neto ukupno',
+    'Neto domaci',
+    'Neto strani',
+    'Ulaz ukupno',
+    'Ulaz domaci',
+    'Ulaz strani',
+    'Izlaz ukupno',
+    'Izlaz domaci',
+    'Izlaz strani'
   ];
 
   requestOptions = [
@@ -55,7 +63,8 @@ export class AppComponent implements OnInit {
       name: '',
       table: '',
       date_from: '',
-      date_to: ''
+      date_to: '',
+      query_type: ''
     }
   ];
 
@@ -98,7 +107,7 @@ export class AppComponent implements OnInit {
       this.multi = [];
       let i = 0;
       // check data has been returned
-      if (data.length > 0) {   
+      if (data.length > 0) {
         data.forEach((element: { name: string; series: { name: Date; value: number; }[]; }) => {
           element.series.forEach((element2: { name: Date; value: number; }) => {
             // element2.name looks like '12-31', make a date object without a year of it
@@ -138,14 +147,29 @@ export class AppComponent implements OnInit {
     this.getData();
   }
 
+  set_previous_graph_type(_request_option: { name: string; table: string; date_from: string; date_to: string; query_type: string; }) {
+    if (this.requestOptions.length > 0) {
+      _request_option.query_type = this.requestOptions[this.requestOptions.length - 1].query_type;
+    } else {
+      _request_option.query_type = '';
+    }
+
+    return _request_option;
+  }
+
   // Adds a new request option
   add_new_line() {
-    this.requestOptions.push({
+    let new_request_option = {
       name: '',
       table: '',
       date_from: '',
-      date_to: ''
-    });
+      date_to: '',
+      query_type: ''
+    };
+
+    new_request_option = this.set_previous_graph_type(new_request_option);
+
+    this.requestOptions.push(new_request_option);
   }
 
   // Removes a request option
@@ -161,7 +185,8 @@ export class AppComponent implements OnInit {
         name: '',
         table: '',
         date_from: '',
-        date_to: ''
+        date_to: '',
+        query_type: ''
       }
     ];
 
