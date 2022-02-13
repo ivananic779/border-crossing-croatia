@@ -31,19 +31,19 @@ export class AppComponent implements OnInit {
   ];
 
   table_list = [
-    'ukupno',
-    'autobusi',
-    'osobni_automobili',
-    'avioni',
-    'teretna_vozila',
-    'plovila',
-    'vlakovi',
-    'ukupno_prijevozna_sredstva',
-    'cestovni',
-    'pomorski',
-    'rijecni',
-    'zeljeznicki',
-    'zracni'
+    'Ukupno ljudi',
+    'Autobusi',
+    'Osobni automobili',
+    'Avioni',
+    'Teretna vozila',
+    'Plovila',
+    'Vlakovi',
+    'Ukupno prijevozna sredstva',
+    'Cestovni',
+    'Pomorski',
+    'Rijecni',
+    'Zeljeznicki',
+    'Zracni'
   ];
 
   query_types = [
@@ -58,6 +58,8 @@ export class AppComponent implements OnInit {
       date_to: ''
     }
   ];
+
+  displayRequestOptionsDialog = false;
 
   chart_view: [number, number];
   scheme_type: ScaleType;
@@ -113,6 +115,8 @@ export class AppComponent implements OnInit {
           this.multi[i] = element;
           i++;
         });
+      } else {
+        this.multi = [];
       }
     });
   }
@@ -164,4 +168,8 @@ export class AppComponent implements OnInit {
     this.getData();
   }
 
+  edit_line() {
+    this.refresh();
+    this.displayRequestOptionsDialog = true;
+  }
 }

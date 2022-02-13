@@ -7,6 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button'
+import { TableModule } from 'primeng/table'
 
 @NgModule({
   declarations: [
@@ -19,6 +22,9 @@ import { FormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    DialogModule,
+    ButtonModule,
+    TableModule    
   ],
   providers: [],
   bootstrap: [AppComponent]
