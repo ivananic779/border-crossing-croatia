@@ -1,4 +1,4 @@
-<h2 class="text-center">Neto ulazi/izlazi</h2>
+<h2 class="text-center">Statistika prelaska granice</h2>
 <!---->
 
 <h3 *ngIf="this.multi.length == 0" class="text-danger text-center">Greška u upitu, provjerite datume i jesu li su sva polja ispunjenja.</h3>
@@ -75,10 +75,17 @@
         </ng-template>
     </p-table>
     <div class="row">
-        <button class="btn-sm btn-primary" type="button" (click)="add_new_line()">+</button>
+        <button class="btn btn-primary pi pi-plus" type="button" (click)="add_new_line()"></button>
     </div>
     <ng-template pTemplate="footer">
         <p-button icon="pi pi-times" (click)="displayRequestOptionsDialog=false;" label="Odustani" styleClass="p-button-text text-danger"></p-button>
-        <p-button icon="pi pi-check" (click)="displayRequestOptionsDialog=false; refresh()" label="Spremi" styleClass="p-button-success"></p-button>
+        <p-button icon="pi pi-check" (click)="refresh()" label="Spremi" styleClass="p-button-success"></p-button>
     </ng-template>
+</p-dialog>
+
+<p-dialog [modal]="true" [(visible)]="displayFormWarningDialog">
+    <p class="text-danger text-center">Greška u formi.</p>
+    <p>Datum svake linije mora počinjati i završavati unutar iste godine.</p>
+    <p>Sva polja na linijama moraju biti popunjena.</p>
+    <p>Polja ne smiju imati isti naziv.</p>
 </p-dialog>

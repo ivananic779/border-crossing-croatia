@@ -69,6 +69,7 @@ export class AppComponent implements OnInit {
   ];
 
   displayRequestOptionsDialog = false;
+  displayFormWarningDialog = false;
 
   chart_view: [number, number];
   scheme_type: ScaleType;
@@ -143,8 +144,20 @@ export class AppComponent implements OnInit {
   }
 
   refresh() {
-    this.setRequestOptionsToStorage();
-    this.getData();
+    let valid_form = true;
+    
+    this.requestOptions.forEach(requestOption => {
+      if (!this.check_if_request_option_is_valid(requestOption)) {
+        this.displayFormWarningDialog = true;
+        valid_form = false;
+      }
+    });
+
+    if (valid_form) {
+      this.setRequestOptionsToStorage();
+      this.getData();
+      this.displayRequestOptionsDialog=false;
+    }
   }
 
   set_previous_graph_type(_request_option: { name: string; table: string; date_from: string; date_to: string; query_type: string; }) {
@@ -194,7 +207,31 @@ export class AppComponent implements OnInit {
   }
 
   edit_line() {
-    this.refresh();
     this.displayRequestOptionsDialog = true;
+  }
+
+  check_if_request_option_is_valid(_request_option: { name: string; table: string; date_from: string; date_to: string; query_type: string; }) {
+    if (_request_option.name != '' && _request_option.table != '' && _request_option.query_type != '' && _request_option.date_from != '' && _request_option.date_to != '') {
+
+      let year_from_date_from = new Date(_request_option.date_from).getFullYear();
+      let year_from_date_to = new Date(_request_option.date_to).getFullYear();
+
+      if (year_from_date_from != year_from_date_to) {
+        return false;
+      }
+
+      let count = 0;
+      this.requestOptions.forEach(requestOption => {
+        if (_request_option.name == requestOption.name) {
+          count += 1;
+        }
+      });
+
+      if (count <= 1) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
