@@ -10,7 +10,7 @@ import { ScaleType, LegendPosition } from '@swimlane/ngx-charts';
 
 export class AppComponent implements OnInit {
 
-  multi = [
+  chart_data = [
     {
       "name": "",
       "series": [
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit {
 
   getData() {
     this.apiService.getUkupno(this.requestOptions).subscribe(data => {
-      this.multi = [];
+      this.chart_data = [];
       let i = 0;
       // check data has been returned
       if (data.length > 0) {
@@ -122,11 +122,11 @@ export class AppComponent implements OnInit {
             // add the date object to the series
             element2.name = date;
           });
-          this.multi[i] = element;
+          this.chart_data[i] = element;
           i++;
         });
       } else {
-        this.multi = [];
+        this.chart_data = [];
       }
     });
   }

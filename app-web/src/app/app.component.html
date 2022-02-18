@@ -1,17 +1,17 @@
 <h2 class="text-center">Granična statistika Republike Hrvatske</h2>
 
 
-<h3 *ngIf="this.multi.length == 0" class="text-danger text-center">Greška u upitu, provjerite datume i jesu li su sva polja ispunjenja.</h3>
+<h3 *ngIf="this.chart_data.length == 0" class="text-danger text-center">Greška u upitu, provjerite datume i jesu li su sva polja ispunjenja.</h3>
 
 <div class="card">
     <div class="card-body row">
         <div class="col-sm-12" style="height: calc(100vh - 16px);">
-            <ngx-charts-line-chart *ngIf="this.multi.length > 0" [schemeType]="this.scheme_type"
+            <ngx-charts-line-chart *ngIf="this.chart_data.length > 0" [schemeType]="this.scheme_type"
                 [animations]="true" [timeline]="true" [autoScale]="true" [gradient]="false" [tooltipDisabled]="false"
                 [legend]="true" [legendTitle]="this.legend_title" [legendPosition]="this.legend_position" [xAxis]="true"
                 [showXAxisLabel]="true" [xAxisLabel]="'Datum'" [trimXAxisTicks]="true" [rotateXAxisTicks]="true"
                 [maxXAxisTickLength]="16" [yAxis]="true" [showYAxisLabel]="true" [yAxisLabel]="'Broj'"
-                [trimYAxisTicks]="true" [rotateXAxisTicks]="true" [maxYAxisTickLength]="16" [results]="this.multi"
+                [trimYAxisTicks]="true" [rotateXAxisTicks]="true" [maxYAxisTickLength]="16" [results]="this.chart_data"
                 [roundDomains]="false" (select)="select($event)" (activate)="activate($event)"
                 (deactivate)="deactivate($event)">
             </ngx-charts-line-chart>
