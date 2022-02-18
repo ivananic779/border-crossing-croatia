@@ -14,6 +14,22 @@
                 [trimYAxisTicks]="true" [rotateXAxisTicks]="true" [maxYAxisTickLength]="16" [results]="this.chart_data"
                 [roundDomains]="false" (select)="select($event)" (activate)="activate($event)"
                 (deactivate)="deactivate($event)">
+
+                <ng-template #tooltipTemplate let-model="model">
+                    <p>{{model.name | date:'dd/MM'}}</p>
+                    <p>{{model.series}}</p>
+                    <p>{{model.value | number:'1.0-0'}}</p>
+                  </ng-template>
+                
+                  <ng-template #seriesTooltipTemplate let-model="model">
+                    <p>{{model[0].name | date:'dd/MM'}}</p>
+                    <div *ngFor="let instance of model">
+                        <p>
+                            <span class="box-tooltip" [ngStyle]="{'background-color': instance.color}"></span>{{instance.series}}: {{instance.value | number:'1.0-0'}}
+                        </p>
+                    </div>
+                  </ng-template>
+
             </ngx-charts-line-chart>
             <br>
             <br>

@@ -149,6 +149,7 @@ def get_table_name(_key):
 
 @app.route("/api/get", methods=["POST"])
 def index():
+    global current_line_values
 
     # Read data from post body
     query_options = request.get_json()
