@@ -10,7 +10,7 @@ import { ScaleType, LegendPosition } from '@swimlane/ngx-charts';
 
 export class AppComponent implements OnInit {
 
-  chart_data = [
+  graph_data = [
     {
       "name": "",
       "series": [
@@ -30,20 +30,33 @@ export class AppComponent implements OnInit {
     }
   ];
 
+  graph_data_raw = [
+    {
+      "date": "",
+      "ulaz_domaci": 0,
+      "ulaz_strani": 0,
+      "ulaz_ukupno": 0,
+      "izlaz_domaci": 0,
+      "izlaz_strani": 0,
+      "izlaz_ukupno": 0,
+      "sveukupno": 0
+    }
+  ];
+
   table_list = [
     'Ukupno ljudi',
+    'Cestovni',
+    'Pomorski',
+    'Rijecni',
+    'Zeljeznicki',
+    'Zracni',
+    'Ukupno prijevozna sredstva',
     'Autobusi',
     'Osobni automobili',
     'Avioni',
     'Teretna vozila',
     'Plovila',
     'Vlakovi',
-    'Ukupno prijevozna sredstva',
-    'Cestovni',
-    'Pomorski',
-    'Rijecni',
-    'Zeljeznicki',
-    'Zracni'
   ];
 
   graph_types = [
@@ -87,7 +100,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getData();
+    this.getGraph();
   }
 
   setRequestOptionsToStorage() {
@@ -103,9 +116,9 @@ export class AppComponent implements OnInit {
     }
   }
 
-  getData() {
-    this.apiService.getUkupno(this.requestOptions).subscribe(data => {
-      this.chart_data = [];
+  getGraph() {
+    this.apiService.getGraph(this.requestOptions).subscribe(data => {
+      this.graph_data = [];
       let i = 0;
       // check data has been returned
       if (data.length > 0) {
@@ -122,13 +135,27 @@ export class AppComponent implements OnInit {
             // add the date object to the series
             element2.name = date;
           });
-          this.chart_data[i] = element;
+          this.graph_data[i] = element;
           i++;
         });
       } else {
-        this.chart_data = [];
+        this.graph_data = [];
       }
     });
+  }
+
+  getGraphData(_table: string, _date_from: string, _date_to: string) {
+    this.apiService.getGraphData(_table, _date_from, _date_to).subscribe(data => {
+      if (data.length > 0) {
+        this.graph_data_raw = data;
+      } else {
+        this.graph_data_raw = [];
+      }
+    });
+  }
+
+  open_graph_data(_table: string, _date_from: string, _date_to: string) {
+    this.getGraphData(_table, _date_from, _date_to);
   }
 
   select(data: any) {
@@ -155,7 +182,7 @@ export class AppComponent implements OnInit {
 
     if (valid_form) {
       this.setRequestOptionsToStorage();
-      this.getData();
+      this.getGraph();
       this.displayRequestOptionsDialog=false;
     }
   }
@@ -203,7 +230,7 @@ export class AppComponent implements OnInit {
       }
     ];
 
-    this.getData();
+    this.getGraph();
   }
 
   edit_line() {

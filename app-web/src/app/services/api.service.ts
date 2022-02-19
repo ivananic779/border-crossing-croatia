@@ -19,7 +19,7 @@ export class ApiService {
 
   // ------------------------------------------------------------
 
-  public getUkupno(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
+  public getGraph(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
     return this.http.post<any>(this.apiUrl + '/get_graph', _request_options)
       .pipe(
         retry(3),
@@ -27,8 +27,16 @@ export class ApiService {
       );
   }
 
- // same request as above, but console log the response
-  public getUkupno_log(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
+  public getGraphData(_table: string, _date_from: string, _date_to: string): Observable<any> {
+    return this.http.post<any>(this.apiUrl + '/get_graph_data', { table: _table, date_from: _date_from, date_to: _date_to })
+      .pipe(
+        retry(3),
+        catchError(this.handleError)
+      );
+  }
+
+  // same request as above, but console log the response
+  public getGraph_log(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
     return this.http.post<any>(this.apiUrl + '/get', _request_options)
       .pipe(
         retry(3),
