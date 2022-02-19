@@ -136,6 +136,54 @@ def get_graph(_query_options):
 
     return jsonify_formatted_db_response(ret)
 
+def get_graph_data(_query_options):
+    try:
+        conn = connect_database()
+    except Exception as e:
+        return connect_db_error()
+
+    ret = []
+
+    data = []
+
+    try:
+        conn.execute(
+            "SELECT date, ulaz_domaci, ulaz_strani, ulaz_ukupno, izlaz_domaci, izlaz_strani, izlaz_ukupno, sveukupno"
+            + " FROM "
+            + get_table_name(_query_options["table"])
+            + " where date between '"
+            + _query_options["date_from"]
+            + "' and '"
+            + _query_options["date_to"]
+            + "' order by date"
+        )
+
+        # Check if response is empty
+        if conn.rowcount == 0:
+            return query_error()
+
+        for date, ulaz_domaci, ulaz_strani, ulaz_ukupno, izlaz_domaci, izlaz_strani, izlaz_ukupno, sveukupno in conn.fetchall():
+
+            data.append(
+                {
+                    "date": date.strftime("%d-%m-%Y"),
+                    "ulaz_domaci": ulaz_domaci,
+                    "ulaz_strani": ulaz_strani,
+                    "ulaz_ukupno": ulaz_ukupno,
+                    "izlaz_domaci": izlaz_domaci,
+                    "izlaz_strani": izlaz_strani,
+                    "izlaz_ukupno": izlaz_ukupno,
+                    "sveukupno": sveukupno
+                }
+            )
+
+        ret.append(data)
+
+    except Exception as e:
+        print(e)
+        return query_error()
+
+    return jsonify_formatted_db_response(ret)
 
 def get_table_name(_key):
     global table_names
@@ -145,8 +193,6 @@ def get_table_name(_key):
 
 @app.route("/api/get_graph", methods=["POST"])
 def index():
-    global current_line_values
-
     # Read data from post body
     query_options = request.get_json()
 
@@ -156,6 +202,15 @@ def index():
 
     return get_graph(query_options)
 
+@app.route("/api/get_graph_data", methods=["POST"])
+def index2():
+    # Read data from post body
+    query_options = request.get_json()
+
+    if not query_options:
+        return post_body_error()
+
+    return get_graph_data(query_options)
 
 if __name__ == "__main__":
     app.run(debug=True)
