@@ -37,10 +37,6 @@ query_types = {
     "Izlaz strani": ["izlaz_strani", ", izlaz_strani as second_value"],
 }
 
-# This is used to keep all values for a single graph line
-# We can then use it to track changes if we need to
-# We can use this to detect anomalies in the data
-# Different functions utilize this differentrly
 current_line_values = []
 
 
