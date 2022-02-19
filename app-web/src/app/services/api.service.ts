@@ -20,7 +20,7 @@ export class ApiService {
   // ------------------------------------------------------------
 
   public getUkupno(_request_options: string | { name: string; table: string; date_from: string; date_to: string; }[]): Observable<any> {
-    return this.http.post<any>(this.apiUrl + '/get', _request_options)
+    return this.http.post<any>(this.apiUrl + '/get_graph', _request_options)
       .pipe(
         retry(3),
         catchError(this.handleError)

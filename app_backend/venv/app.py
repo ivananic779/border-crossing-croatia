@@ -143,7 +143,7 @@ def get_table_name(_key):
     return table_names[_key]
 
 
-@app.route("/api/get", methods=["POST"])
+@app.route("/api/get_graph", methods=["POST"])
 def index():
     global current_line_values
 
